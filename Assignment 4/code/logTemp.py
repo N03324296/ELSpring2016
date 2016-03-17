@@ -8,8 +8,6 @@ from datetime import datetime
 import sqlite3 as lite
 import sys
 
-database = 'myTempTime.db'
-
 # Get temperature
 def readTemp():
         tempfile = open("/sys/bus/w1/devices/28-0000076bda99/w1_slave")
@@ -34,12 +32,12 @@ def logTemp():
         con = None
 
         try:
-                con = lite.connect(database)
+                con = lite.connect('/home/pi/Developer/temperature/myTempTime.db')
                 cur = con.cursor()
                 cur.execute("INSERT INTO temperature VALUES(\'" + date + "\',\'" + time + "\'," + str(tempC) + "," + str(tempF) + ");")
                 con.commit()
-        except lite.Error, e:
-                print "Error %s:" % e.arg[0]
+        except lite.Error as e:
+                print("Error:" + e.arg[0])
                 sys.exit(1)
         finally:
                 if con:
@@ -51,12 +49,12 @@ def logTemp():
 def createDB():
         can = None
         try:
-                con = lite.connect(database)
+                con = lite.connect('/home/pi/Developer/temperature/myTempTime.db')
                 cur = con.cursor()
                 cur.execute("DROP TABLE IF EXISTS temperature")
                 cur.execute("CREATE TABLE temperature(date text, time text, tempC float, tempF float)")
-        except lite.Error, e:
-                print "Error %s:" % e.arg[0]
+        except lite.Error as e:
+                print("Error:" + e.arg[0])
                 sys.exit(1)
         finally:
                 if con:
